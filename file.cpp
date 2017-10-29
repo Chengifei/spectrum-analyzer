@@ -91,8 +91,8 @@ bmp_file::bmp_file(int w, int h) : width(w), height(h) {
     write<std::uint16_t>(data, 8); // bits per pixel
     write<std::uint32_t>(data, 0); // compression
     write<std::uint32_t>(data, awidth * aheight);
-    write<std::int32_t>(data, 3779); // hres
-    write<std::int32_t>(data, 3779); // vres
+    write<std::int32_t>(data, 1200); // hres
+    write<std::int32_t>(data, 1200); // vres
     write<std::int32_t>(data, 256); // colors in palatte
     write<std::int32_t>(data, 256); // important colors
     for (int i = 0; i != 256; ++i) {
@@ -112,6 +112,13 @@ void bmp_file::save(const char* filename) {
 #else
     void* file = CreateFile(filename, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
                       CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        if (GetLastError() == ERROR_FILE_EXISTS)
+            printf("%s exists, delete the file to save.\n", filename);
+        else
+            printf("Unknown error when creating file\n");
+        return;
+    }
     SetFilePointer(file, size, nullptr, FILE_BEGIN);
     SetEndOfFile(file);
     void* map = CreateFileMapping(file, nullptr, PAGE_READWRITE, 0, 0, nullptr);

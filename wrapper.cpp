@@ -146,7 +146,7 @@ PyObject* save(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyObject* use_array(PyObject* self, PyObject* args) {
+PyObject* from_array(PyObject* self, PyObject* args) {
     PyObject* view;
     if (!PyArg_ParseTuple(args, "O", &view))
         return nullptr;
@@ -156,17 +156,32 @@ PyObject* use_array(PyObject* self, PyObject* args) {
     PyOnly(strcmp(buf->format, "d"), 0);
     double* ptr = static_cast<double*>(buf->buf);
     std::size_t len = buf->len / buf->itemsize;
-    double factor = 256 / *std::max_element(ptr, ptr + len);
+    double factor = 255 / (*std::max_element(ptr, ptr + len) - *ptr);
     std::unique_ptr<std::uint8_t[]> char_ar = std::make_unique<std::uint8_t[]>(len);
     for (std::size_t n = 0; n != len; ++n)
-        char_ar[n] = std::uint8_t(factor * ptr[n]);
+        char_ar[n] = std::uint8_t((ptr[n] > *ptr) ? factor * (ptr[n] - *ptr) : 0);
+    s.use_array(char_ar.get(), len);
+    Py_RETURN_NONE;
+}
+
+PyObject* from_list(PyObject* self, PyObject* args) {
+    PyObject* list;
+    if (!PyArg_ParseTuple(args, "O", &list))
+        return nullptr;
+    bmp_file& s = *static_cast<bmp_file*>(static_cast<py_bmp_writer*>(self));
+    PyOnly(PyList_CheckExact(list), true);
+    std::size_t len = PyList_GET_SIZE(list);
+    std::unique_ptr<std::uint8_t[]> char_ar = std::make_unique<std::uint8_t[]>(len);
+    for (std::size_t i = 0; i != len; ++i)
+        char_ar[i] = PyLong_AsLong(PyList_GET_ITEM(list, i));
     s.use_array(char_ar.get(), len);
     Py_RETURN_NONE;
 }
 
 static PyMethodDef BmpMethods[] = {
     { "save", save, METH_VARARGS, "" },
-    { "array", use_array, METH_VARARGS, "" },
+    { "array", from_array, METH_VARARGS, "" },
+    { "list", from_list, METH_VARARGS, "" },
     { nullptr }
 };
 
