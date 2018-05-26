@@ -53,7 +53,11 @@ while True:
             print(f"{f.tell()}ms")
         elif In[0] == 'g':
             ar = sa.get_pitch(f, int(In[1]))
-        elif In[0] == 'p':
+        elif In[0] == 'slog':
+            fig = plt.figure(None, (32, 8))
+            plot = plt.bar(notes, ar, log=True)
+            fig.savefig("a.svg")
+        elif In[0] == 's':
             fig = plt.figure(None, (32, 8))
             plot = plt.bar(notes, ar)
             fig.savefig("a.svg")

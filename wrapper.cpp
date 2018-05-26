@@ -1,5 +1,4 @@
 #include "wrapper.hpp"
-#include <algorithm>
 
 static PyObject* wav_getattro(PyObject *self, PyObject *attro) {
     if (auto i = PyObject_GenericGetAttr(self, attro))

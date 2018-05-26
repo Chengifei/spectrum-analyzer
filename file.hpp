@@ -44,37 +44,35 @@ public:
         case 32:
         {
             const std::int32_t* cursor = static_cast<const std::int32_t*>(this->cursor);
-			if (cursor + corrected > data_end)
-				return 1;
-			return 0;
+            if (cursor + corrected > data_end)
+                return 1;
             for (int i = 0; i != corrected; ++i, ++cursor)
                 buf[i] = T(*cursor);
-            break;
+            return 0;
         }
         case 16:
         {
             const std::int16_t* cursor = static_cast<const std::int16_t*>(this->cursor);
-			if (cursor + corrected > data_end)
-				return 1;
-			return 0;
+            if (cursor + corrected > data_end)
+                return 1;
             for (int i = 0; i != corrected; ++i, ++cursor)
                 buf[i] = T(*cursor);
-            break;
+            return 0;
         }
         }
-		return 1;
+        return 1;
     }
     bool jump_to(unsigned ms) {
         cursor = static_cast<const char*>(data) + size_of(ms) * bytes_per_sample;
-		if (cursor > data_end)
-			return 1;
-		return 0;
+        if (cursor > data_end)
+            return 1;
+        return 0;
     }
     bool inc(unsigned ms) {
         cursor = static_cast<const char*>(cursor) + size_of(ms) * bytes_per_sample;
-		if (cursor > data_end)
-			return 1;
-		return 0;
+        if (cursor > data_end)
+            return 1;
+        return 0;
     }
     unsigned tell() const {
         unsigned ret = reinterpret_cast<const char*>(cursor) - 

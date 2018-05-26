@@ -59,22 +59,21 @@ wav_file::wav_file(const char* filename) {
     while (memcmp("data", data, 4))
         data += 8 + *reinterpret_cast<const std::uint32_t*>(data + 4);
     data += 4;
-	std::size_t data_len = read<std::uint32_t>(data);
-	this->data = data;
-	this->data_end = data + data_len;
+    std::size_t data_len = read<std::uint32_t>(data);
+    this->data = data;
+    this->data_end = data + data_len;
     cursor = data;
 }
 
 wav_file::~wav_file() {
 #ifndef _WIN32
-	if (munmap(map, sz))
-		err(-1, "munmap");
-	if (close(fd))
-		err(-1, "close");
+    if (munmap(map, sz))
+        err(-1, "munmap");
+    if (close(fd))
+        err(-1, "close");
 #else
-	UnmapViewOfFile(base);
-	CloseHandle(map);
-	CloseHandle(file);
+    UnmapViewOfFile(base);
+    CloseHandle(map);
+    CloseHandle(file);
 #endif
 }
-
