@@ -5,8 +5,13 @@
 #include <memory>
 
 class wav_file {
+#ifndef _WIN32
+    typedef const char* fn_t;
+#else
+    typedef const wchar_t* fn_t;
+#endif
 public:
-    wav_file(const char* name);
+    wav_file(fn_t name);
 private:
 #ifndef _WIN32
     int fd;

@@ -18,7 +18,7 @@ ret_t read(const char*& ptr) {
     return *reinterpret_cast<const read_t*>(_);
 }
 
-wav_file::wav_file(const char* filename) {
+wav_file::wav_file(wav_file::fn_t filename) {
 #ifndef _WIN32
     struct stat sb;
     fd = open(filename, O_RDONLY);
@@ -29,7 +29,7 @@ wav_file::wav_file(const char* filename) {
         err(-1, "mmap");
     const char* data = static_cast<const char*>(map);
 #else
-    file = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
+    file = CreateFileW(filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     map = CreateFileMapping(file, nullptr, PAGE_READONLY, 0, 0, nullptr);
     base = MapViewOfFile(map, FILE_MAP_READ, 0, 0, 0);
