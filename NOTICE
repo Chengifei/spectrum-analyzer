@@ -1,0 +1,23 @@
+spectrum-analyzer
+Copyright 2017-2018 Yifei Zheng
+
+This product uses Eigen, NumPy, FFmpeg, matplotlib, FLASK, and PortAudio.
+
+Eigen is licensed under MPLv2.0
+
+Numpy
+Copyright 2005-2018, NumPy Developers.
+All rights reserved.
+
+FFmpeg is licensed under LGPLv2.1
+
+matplotlib
+Copyright (c) 2012-2018 Matplotlib Development Team;
+All Rights Reserved.
+
+Flask
+Copyright 2010 by the Pallets team.
+Some rights reserved.
+
+PortAudio Portable Real-Time Audio Library
+Copyright (c) 1999-2011 Ross Bencina and Phil Burk

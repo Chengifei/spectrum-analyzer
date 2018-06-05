@@ -42,9 +42,11 @@ public:
         if (remainder >= 500) ++records;
         return corrected;
     }
+    const void* get() const {
+        return cursor;
+    }
     template <typename T>
-    bool get(unsigned ms, T buf[]) {
-        int corrected = size_of(ms);
+    bool get(unsigned corrected, T buf[]) const {
         switch (bit_depth) {
         case 32:
         {
@@ -75,6 +77,12 @@ public:
     }
     bool inc(unsigned ms) {
         cursor = static_cast<const char*>(cursor) + size_of(ms) * bytes_per_sample;
+        if (cursor > data_end)
+            return 1;
+        return 0;
+    }
+    bool inc_raw(unsigned step) {
+        cursor = static_cast<const char*>(cursor) + step * bytes_per_sample;
         if (cursor > data_end)
             return 1;
         return 0;
