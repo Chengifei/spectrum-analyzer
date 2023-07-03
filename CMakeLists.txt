@@ -5,12 +5,13 @@ project(spectrum_analyzer)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-pkg_check_modules(PKG REQUIRED python3 eigen3 portaudio-2.0 libswresample)
-set(NUMPY_INCLUDE_DIR /usr/local/lib/python3.6/site-packages/numpy/core/include/)
+pkg_check_modules(PKG REQUIRED eigen3 portaudio-2.0 libswresample)
+find_package(Python3 COMPONENTS Interpreter Development NumPy)
 
-include_directories(SYSTEM ${PKG_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIR})
+include_directories(SYSTEM ${PKG_INCLUDE_DIRS} ${Python3_INCLUDE_DIRS} ${Python3_NumPy_INCLUDE_DIRS})
 link_directories(${PKG_LIBRARY_DIRS})
 link_libraries(${PKG_LIBRARIES})
+add_compile_definitions(NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION)
 
 add_library(spectrum_analyzer SHARED
         file.cpp

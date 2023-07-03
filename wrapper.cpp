@@ -53,7 +53,7 @@ static PyObject* get(PyObject* self, PyObject* arg) {
     wav_file& s = *static_cast<py_wav_handle*>(self);
     npy_intp frames = s.size_of(ms);
     auto ret = PyArray_SimpleNew(1, &frames, NPY_FLOAT);
-    s.get(frames, static_cast<float*>(PyArray_GETPTR1(ret, 0)));
+    s.get(frames, static_cast<float*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret))));
     return ret;
 }
 
@@ -78,8 +78,8 @@ static int wav_file_init(PyObject* self, PyObject* args, PyObject*) {
     new(static_cast<wav_file*>(static_cast<py_wav_handle*>(self))) wav_file(name);
     py_wav_handle& wav = *static_cast<py_wav_handle*>(self);
     wav.player = static_cast<pa_stream_handle*>(pa_stream_handle_type.tp_new(&pa_stream_handle_type, nullptr, nullptr));
-    auto err = Pa_OpenDefaultStream(&static_cast<pa_stream_handle*>(wav.player)->stream, 0, wav.channels, paInt16, wav.sample_rate, paFramesPerBufferUnspecified, portaudio_callback, wav.player);
-    static_cast<pa_stream_handle*>(wav.player)->file = static_cast<py_wav_handle*>(self);
+    auto err = Pa_OpenDefaultStream(&wav.player->stream, 0, wav.channels, paInt16, wav.sample_rate, paFramesPerBufferUnspecified, portaudio_callback, wav.player);
+    wav.player->file = static_cast<py_wav_handle*>(self);
     if (err != paNoError)
         return -1;
     return 0;
@@ -120,7 +120,7 @@ static PyObject* resample(PyObject* self, PyObject* args) {
     std::size_t size = wav.size_of(len);
     npy_intp outsz = swr_get_out_samples(ctx, size); // max
     PyObject* ret = PyArray_SimpleNew(1, &outsz, NPY_INT16);
-    uint8_t* buf = reinterpret_cast<uint8_t*>(PyArray_GETPTR1(ret, 0));
+    uint8_t* buf = static_cast<uint8_t*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(ret)));
     const uint8_t* in = static_cast<const uint8_t*>(wav.get());
     npy_intp actual_out_sz = swr_convert(ctx, &buf, outsz, &in, size);
     PyArray_Dims dims { &actual_out_sz, 1 };

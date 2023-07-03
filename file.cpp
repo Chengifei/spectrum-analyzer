@@ -22,6 +22,8 @@ wav_file::wav_file(wav_file::fn_t filename) {
 #ifndef _WIN32
     struct stat sb;
     fd = open(filename, O_RDONLY);
+    if (fd == -1)
+        err(-1, "open");
     fstat(fd, &sb);
     sz = sb.st_size;
     map = mmap(nullptr, sz, PROT_READ, MAP_PRIVATE, fd, 0);
